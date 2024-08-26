@@ -288,7 +288,6 @@ def main(
                 )
                 token_per_second_list.append(token_per_second)
 
-    breakpoint()
     model_path = config[model_name]["path"]
     use_flash = config[model_name]["use_flash_attn"] and FLASH_AVAILABLE
     if use_flash:
