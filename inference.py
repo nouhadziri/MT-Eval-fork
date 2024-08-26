@@ -16,7 +16,6 @@ from datasets import load_dataset
 from strictfire import StrictFire
 from tqdm import tqdm
 from utils.misc import get_logger, config
-from utils.openai_generate import generate
 from utils.constants import INFERENCE_OUTPUT
 from typing import Dict, Any, List, Literal
 from time import time
