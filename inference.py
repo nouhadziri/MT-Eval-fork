@@ -4,6 +4,10 @@ import torch
 import numpy as np
 import importlib.util
 
+import vllm
+import evaluate
+from vllm import LLM, SamplingParams
+
 from copy import deepcopy
 from transformers import (
     GenerationConfig,
@@ -40,6 +44,21 @@ class StoppingCriteriaSub(StoppingCriteria):
         tokens = self.tokenizer.decode(input_ids[0][-15:])
         return any([stop in tokens[-len(stop) :] for stop in self.stops])
 
+
+def vllm_generate(prompts):
+    sampling_params = vllm.SamplingParams(
+        temperature=1,
+        max_tokens=512,
+        top_p=1.0,
+        include_stop_str_in_output=True,
+    )
+    generations = model.generate(prompts, sampling_params)
+    prompt_to_output = {
+        g.prompt: g.outputs[0].text for g in generations
+    }
+    outputs = [prompt_to_output[prompt] if prompt in prompt_to_output else "" for prompt in prompts]
+
+    return outputs
 
 def llama_generate(
     prompt,
@@ -233,6 +252,9 @@ def main(
         pbar = tqdm(total=total_forward)
     pbar.set_description(f"Inferencing {out_filename}")
     token_per_second_list = []
+
+
+    prompts = []
     for i, row in enumerate(data):
         # create prompt
         if use_openai:
@@ -254,7 +276,7 @@ def main(
                 continue
             conv.update_last_message(None)
             prompt = conv.get_prompt()
-            error_occured = False
+            prompts.append(prompt)
             if use_openai:
                 resp, prompt_len, token_per_second = generate(
                     model_name=model_name,
@@ -266,51 +288,16 @@ def main(
                     max_tokens=max_new_tokens,
                 )
                 token_per_second_list.append(token_per_second)
-            else:
-                try:
-                    resp, prompt_len, token_per_second = llama_generate(
-                        prompt=prompt,
-                        model=model,
-                        tokenizer=tokenizer,
-                        generation_config=generation_config,
-                        end_tokens=end_tokens,
-                    )
-                    token_per_second_list.append(token_per_second)
-                except Exception as e:
-                    error_occured = True
-                    logger.exception(f"Error occured at {i}.")
-            if not print_first_prompt and not error_occured:
-                tqdm.write(prompt)
-                tqdm.write(resp)
-                print_first_prompt = True
-            turn["error"] = error_occured
-            pbar.set_postfix({"t/s": f"{np.mean(token_per_second_list):.2f}"})
-            pbar.update(1)
-            if use_gold_history:
-                conv.update_last_message(turn["sys"])
-            else:
-                conv.update_last_message(resp)
-            if not error_occured:
-                # I like output_key to be the first key
-                turn["prompt"] = prompt
-                turn["prompt_len"] = prompt_len
-                turn[output_key] = resp
-            if i % 10 == 0:
-                with open(out_filename, "w", encoding="utf-8") as f:
-                    f.write(
-                        "\n".join([
-                            json.dumps(row, ensure_ascii=False) for row in data
-                        ])
-                    )
-                logger.debug(
-                    f"Ran {i+1}/{len(data)}."
-                    f" prompt_len={prompt_len if not error_occured else 'ERROR'}."
-                    f" Saved to {out_filename}"
-                )
-    with open(out_filename, "w", encoding="utf-8") as f:
-        f.write(
-            "\n".join([json.dumps(row, ensure_ascii=False) for row in data])
-        )
+
+    breakpoint()
+    outputs = vllm_generate(prompts=prompts)
+    generations_dir = "/net/nfs.cirrascale/mosaic/nouhad/projects/MT-Eval-fork/inference_outputs/refinement"
+    out_file_path = os.path.join(generations_dir, f"preds_{dataset}.json")
+    with open(out_file_path, 'w') as f_out:
+        json.dump(outputs, f_out, indent=4)
+
+
+
     logger.info(f"Finished running. Output saved in {out_filename}.")
 
 
