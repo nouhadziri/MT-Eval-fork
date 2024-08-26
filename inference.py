@@ -5,7 +5,6 @@ import numpy as np
 import importlib.util
 
 import vllm
-import evaluate
 from vllm import LLM, SamplingParams
 
 from copy import deepcopy
