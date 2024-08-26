@@ -44,7 +44,7 @@ class StoppingCriteriaSub(StoppingCriteria):
         return any([stop in tokens[-len(stop) :] for stop in self.stops])
 
 
-def vllm_generate(prompts):
+def vllm_generate(model, prompts):
     sampling_params = vllm.SamplingParams(
         temperature=1,
         max_tokens=512,
@@ -289,7 +289,23 @@ def main(
                 token_per_second_list.append(token_per_second)
 
     breakpoint()
-    outputs = vllm_generate(prompts=prompts)
+    model_path = config[model_name]["path"]
+    use_flash = config[model_name]["use_flash_attn"] and FLASH_AVAILABLE
+    if use_flash:
+        logger.info("Using flash attention2.")
+    model = AutoModelForCausalLM.from_pretrained(
+        model_path,
+        device_map="auto",
+        load_in_8bit=load_8bit,
+        torch_dtype=torch.float16,
+        trust_remote_code=True,
+        attn_implementation="flash_attention_2" if use_flash else None,
+        **load_model_args,
+    )
+    # tokenizer = AutoTokenizer.from_pretrained(
+    #     model_path, trust_remote_code=True
+    # )
+    outputs = vllm_generate(model=model, prompts=prompts)
     generations_dir = "/net/nfs.cirrascale/mosaic/nouhad/projects/MT-Eval-fork/inference_outputs/refinement"
     out_file_path = os.path.join(generations_dir, f"preds_{dataset}.json")
     with open(out_file_path, 'w') as f_out:
