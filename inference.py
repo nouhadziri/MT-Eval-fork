@@ -134,10 +134,7 @@ def main(
     prompts = []
     for i, row in enumerate(data):
         # create prompt
-        if use_openai:
-            conv = deepcopy(config["gpt-4"]["chat_template"])
-        else:
-            conv = deepcopy(config[model_name]["chat_template"])
+        conv = deepcopy(config[model_name]["chat_template"])
         if system_message:
             conv.set_system_message(system_message)
         for turn in row[conv_key]:
