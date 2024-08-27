@@ -115,7 +115,7 @@ def main(
         tensor_parallel_size=torch.cuda.device_count(),
     )
 
-    outputs = vllm_generate(model=model, prompts=prompts)
+    outputs = vllm_generate(model=model, prompts=prompts[:10])
     generations_dir = "/net/nfs.cirrascale/mosaic/nouhad/projects/MT-Eval-fork/inference_outputs/refinement"
     out_file_path = os.path.join(generations_dir, f"preds.json")
     with open(out_file_path, 'w') as f_out:
