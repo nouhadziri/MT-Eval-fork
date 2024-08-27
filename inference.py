@@ -166,14 +166,18 @@ def main(
     use_flash = config[model_name]["use_flash_attn"] and FLASH_AVAILABLE
     if use_flash:
         logger.info("Using flash attention2.")
-    model = AutoModelForCausalLM.from_pretrained(
-        model_path,
-        device_map="auto",
-        load_in_8bit=load_8bit,
-        torch_dtype=torch.float16,
-        trust_remote_code=True,
-        attn_implementation="flash_attention_2" if use_flash else None,
-        **load_model_args,
+    # model = AutoModelForCausalLM.from_pretrained(
+    #     model_path,
+    #     device_map="auto",
+    #     load_in_8bit=load_8bit,
+    #     torch_dtype=torch.float16,
+    #     trust_remote_code=True,
+    #     attn_implementation="flash_attention_2" if use_flash else None,
+    #     **load_model_args,
+    # )
+    model = vllm.LLM(
+        model="meta-llama/Meta-Llama-3-8B-Instruct",
+        tensor_parallel_size=torch.cuda.device_count(),
     )
     # tokenizer = AutoTokenizer.from_pretrained(
     #     model_path, trust_remote_code=True
