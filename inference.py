@@ -121,7 +121,7 @@ def main(
     with open(out_file_path, 'w') as f_out:
         json.dump(outputs, f_out, indent=4)
 
-    logger.info(f"Finished running. Output saved in {out_filename}.")
+    logger.info(f"Finished running. Output saved in {out_file_path}.")
 
 
 if __name__ == "__main__":
