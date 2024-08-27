@@ -176,7 +176,7 @@ def main(
     #     **load_model_args,
     # )
     model = vllm.LLM(
-        model="meta-llama/Meta-Llama-3-8B-Instruct",
+        model="allenai/tulu-2-dpo-7b",
         tensor_parallel_size=torch.cuda.device_count(),
     )
     # tokenizer = AutoTokenizer.from_pretrained(
@@ -187,6 +187,7 @@ def main(
     out_file_path = os.path.join(generations_dir, f"preds.json")
     with open(out_file_path, 'w') as f_out:
         json.dump(outputs, f_out, indent=4)
+
 
 
 
