@@ -130,6 +130,16 @@ def main(
     use_gold_history: bool = False,
     n_forward: int = -1,
 ):
+    logger = get_logger(
+        name=__name__,
+        console_level="info",
+        file_level="debug",
+        log_path=os.path.join(
+            "log",
+            f"{task_name}_{model_name}.log",
+        ),
+        maxBytes=10000000,
+    )
     data = load_dataset("wckwan/MT-Eval", task_name, split="test").to_list()
     prompts = []
     for i, row in enumerate(data):
