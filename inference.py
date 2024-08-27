@@ -178,7 +178,6 @@ def main(
     # tokenizer = AutoTokenizer.from_pretrained(
     #     model_path, trust_remote_code=True
     # )
-    breakpoint()
     outputs = vllm_generate(model=model, prompts=prompts)
     generations_dir = "/net/nfs.cirrascale/mosaic/nouhad/projects/MT-Eval-fork/inference_outputs/refinement"
     out_file_path = os.path.join(generations_dir, f"preds_{dataset}.json")
