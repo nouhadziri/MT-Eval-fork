@@ -92,7 +92,6 @@ def main(
         if system_message:
             conv.set_system_message(system_message)
         for turn in row[conv_key]:
-            breakpoint()
             conv.append_message(conv.roles[0], turn["user"])
             conv.append_message(conv.roles[1], turn["sys"])
             if not turn["do_inference"]:
@@ -106,6 +105,9 @@ def main(
             conv.update_last_message(None)
             prompt = conv.get_prompt()
             prompts.append(prompt)
+        breakpoint()
+
+
 
     use_flash = config[model_name]["use_flash_attn"] and FLASH_AVAILABLE
     if use_flash:
