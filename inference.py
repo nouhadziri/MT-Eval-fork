@@ -108,9 +108,9 @@ def main(
         conv = deepcopy(config[model_name]["chat_template"])
         if system_message:
             conv.set_system_message(system_message)
-        for turn in row[conv_key]:
-            breakpoint()
-            conversations = process_turns(data)
+
+        breakpoint()
+        conversations = process_turns(row)
             # breakpoint()
             # conv.append_message(conv.roles[0], turn["user"])
             # conv.append_message(conv.roles[1], turn["sys"])
