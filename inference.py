@@ -70,7 +70,6 @@ def process_turns(data):
 
         # Add the current conversation to conversations list
         conversations.append(list(current_conversation))  # Add a copy of the current conversation
-        breakpoint()
     return conversations
 
 def main(
