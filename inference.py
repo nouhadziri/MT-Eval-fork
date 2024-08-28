@@ -63,6 +63,7 @@ def process_turns(data):
         assistant_turn = {"role": "assistant", "content": row["sys"]}
         conversation.append(user_turn)
         conversation.append(assistant_turn)
+        breakpoint()
         conversations.append(conversation)
 
     return conversations
