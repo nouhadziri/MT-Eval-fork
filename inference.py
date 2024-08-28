@@ -59,7 +59,7 @@ def process_turns(data):
     conversations = []
     conversation = []
     for i, row in enumerate(data):
-        user_turn = {"role": "user", "content": row["user"] + " " + row["instruction"]}
+        user_turn = {"role": "user", "content": row["user"] + " " + row["inst"]}
         assistant_turn = {"role": "assistant", "content": row["sys"]}
         conversation.append(user_turn)
         conversation.append(assistant_turn)
