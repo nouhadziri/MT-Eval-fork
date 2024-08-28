@@ -50,6 +50,23 @@ def vllm_generate(model, prompts):
     return outputs
 
 
+# #chat = [
+#    {"role": "user", "content": "Hello, how are you?"},
+#    {"role": "assistant", "content": "I'm doing great. How can I help you today?"},
+#    {"role": "user", "content": "I'd like to show off how chat templating works!"},
+# ]
+def process_turns(data):
+    conversations = []
+    conversation = []
+    for i, row in enumerate(data):
+        user_turn = {"role": "user", "content": row["user"] + " " + row["instruction"]}
+        assistant_turn = {"role": "assistant", "content": row["sys"]}
+        conversation.append(user_turn)
+        conversation.append(assistant_turn)
+        conversations.append(conversation)
+
+    return conversations
+
 def main(
     model_name: str,
     task_name: Literal[
@@ -93,19 +110,21 @@ def main(
             conv.set_system_message(system_message)
         for turn in row[conv_key]:
             breakpoint()
-            conv.append_message(conv.roles[0], turn["user"])
-            conv.append_message(conv.roles[1], turn["sys"])
-            if not turn["do_inference"]:
-                pbar.update(1)
-                continue
-            if resume and output_key in turn:
-                pbar.update(1)
-                if not use_gold_history:
-                    conv.update_last_message(turn[output_key])
-                continue
-            conv.update_last_message(None)
-            prompt = conv.get_prompt()
-            prompts.append(prompt)
+            conversations = process_turns(data)
+            # breakpoint()
+            # conv.append_message(conv.roles[0], turn["user"])
+            # conv.append_message(conv.roles[1], turn["sys"])
+            # if not turn["do_inference"]:
+            #     pbar.update(1)
+            #     continue
+            # if resume and output_key in turn:
+            #     pbar.update(1)
+            #     if not use_gold_history:
+            #         conv.update_last_message(turn[output_key])
+            #     continue
+            # conv.update_last_message(None)
+            # prompt = conv.get_prompt()
+            # prompts.append(prompt)
 
 
 
