@@ -61,7 +61,7 @@ def process_turns(data):
 
     for i, row in enumerate(data):
         # Create the turns for this row
-        user_turn = {"role": "user", "content": row["user"] + " " + row["inst"]}
+        user_turn = {"role": "user", "content": row["user"]}
         assistant_turn = {"role": "assistant", "content": row["sys"]}
 
         # Append the new turns to the current conversation
