@@ -103,7 +103,7 @@ def main(
                 if not use_gold_history:
                     conv.update_last_message(turn[output_key])
                 continue
-            # conv.update_last_message(None)
+            conv.update_last_message(None)
             prompt = conv.get_prompt()
             prompts.append(prompt)
 
