@@ -109,8 +109,8 @@ def main(
         if system_message:
             conv.set_system_message(system_message)
 
+        conversations = process_turns(row["conv"])
         breakpoint()
-        conversations = process_turns(row)
             # breakpoint()
             # conv.append_message(conv.roles[0], turn["user"])
             # conv.append_message(conv.roles[1], turn["sys"])
