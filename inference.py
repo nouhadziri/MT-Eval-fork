@@ -57,15 +57,20 @@ def vllm_generate(model, prompts):
 # ]
 def process_turns(data):
     conversations = []
-    conversation = []
+    current_conversation = []
+
     for i, row in enumerate(data):
+        # Create the turns for this row
         user_turn = {"role": "user", "content": row["user"] + " " + row["inst"]}
         assistant_turn = {"role": "assistant", "content": row["sys"]}
-        conversation.append(user_turn)
-        conversation.append(assistant_turn)
-        breakpoint()
-        conversations.append(conversation)
 
+        # Append the new turns to the current conversation
+        current_conversation.append(user_turn)
+        current_conversation.append(assistant_turn)
+
+        # Add the current conversation to conversations list
+        conversations.append(list(current_conversation))  # Add a copy of the current conversation
+        breakpoint()
     return conversations
 
 def main(
